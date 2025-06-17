@@ -80,12 +80,6 @@ Make sure your service account/user has:
 - VPC access management
 ---
 
-## ✅ Architecture Diagram
-
-![Architecture Diagram](gcp/scripts/architecture.png)
-
----
-
 ## 🧾 Naming Conventions
 
 To ensure consistency, clarity, and compatibility with GCP resource constraints, this project follows the naming conventions below:
