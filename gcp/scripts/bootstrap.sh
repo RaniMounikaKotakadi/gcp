@@ -45,24 +45,21 @@ EXISTING_PROJECT_ID=$(gcloud projects list --filter="name:$PROJECT_NAME" --forma
 
 if [ -n "$EXISTING_PROJECT_ID" ]; then
     echo "✅ Found existing project: $EXISTING_PROJECT_ID"
-    set_tfvar "project_id" "$EXISTING_PROJECT_ID"
-    export TF_VAR_project_id="$EXISTING_PROJECT_ID"
 else
     echo "🆕 Project not found. Creating new one..."
-
     RANDOM_SUFFIX=$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c 6)
-    NEW_PROJECT_ID="${ENV}-${PROJECT_BASE}-${RANDOM_SUFFIX}"
-    echo "📌 New Project ID: $NEW_PROJECT_ID"
+    EXISTING_PROJECT_ID="${ENV}-${PROJECT_BASE}-${RANDOM_SUFFIX}"
+    echo "📌 New Project ID: $EXISTING_PROJECT_ID"
 
-    gcloud projects create "$NEW_PROJECT_ID" --name="$PROJECT_NAME" --quiet
+    gcloud projects create "$EXISTING_PROJECT_ID" --name="$PROJECT_NAME" --quiet
 
-    echo "⏳ Waiting for project '$NEW_PROJECT_ID' to be fully available..."
-    until gcloud projects describe "$NEW_PROJECT_ID" &> /dev/null; do
+    echo "⏳ Waiting for project '$EXISTING_PROJECT_ID' to be fully available..."
+    until gcloud projects describe "$EXISTING_PROJECT_ID" &> /dev/null; do
         sleep 3
     done
 
     echo "🔗 Linking billing account..."
-    if ! gcloud beta billing projects link "$NEW_PROJECT_ID" --billing-account="$BILLING_ACCOUNT"; then
+    if ! gcloud beta billing projects link "$EXISTING_PROJECT_ID" --billing-account="$BILLING_ACCOUNT"; then
         echo "❌ Billing account link failed. Exiting."
         exit 1
     fi
@@ -81,13 +78,21 @@ else
     )
 
     for api in "${REQUIRED_APIS[@]}"; do
-        enable_api_if_needed "$api" "$NEW_PROJECT_ID"
+        enable_api_if_needed "$api" "$EXISTING_PROJECT_ID"
     done
-
-    # Save to tfvars
-    set_tfvar "project_id" "$NEW_PROJECT_ID"
-    export TF_VAR_project_id="$NEW_PROJECT_ID"
 fi
+
+# Save and apply project ID
+set_tfvar "project_id" "$EXISTING_PROJECT_ID"
+export TF_VAR_project_id="$EXISTING_PROJECT_ID"
+
+echo "🔧 Setting gcloud active project to $EXISTING_PROJECT_ID"
+gcloud config set project "$EXISTING_PROJECT_ID"
+gcloud auth application-default set-quota-project "$EXISTING_PROJECT_ID"
+
+# === Confirm final project ID and gcloud config ===
+echo "✅ Terraform will use project ID: $TF_VAR_project_id"
+gcloud config get-value project
 
 # === Run Terraform ===
 echo "🚀 Running Terraform apply"

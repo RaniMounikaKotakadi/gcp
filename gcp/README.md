@@ -1,4 +1,4 @@
-# 🚀 GCP Project Bootstrap & Terraform Automation
+gcloud # 🚀 GCP Project Bootstrap & Terraform Automation
 
 This repository automates the creation and management of **Google Cloud projects** and resources **Google Cloud Functions**, **Load Balancer**, **Service Accounts**, and **secure IAM setup**.using Bash scripts and Terraform.
 
@@ -152,7 +152,7 @@ Edit `terraform/versions.tf`:
   }
 
 ```
-🔁 This is needed only once. Replace <your-unique-bucket-name> accordingly.
+🔁 This is needed only once. Replace <your-unique-bucket-name> accordingly. (Already created at begining)
 
 ### 2. Fill in `terraform.tfvars`
 
@@ -175,6 +175,12 @@ region           = "<region>"
 ```bash
 ./scripts/bootstrap.sh
 ```
+### or
+
+```powershell
+./scripts/bootstrap.ps1
+```
+
 🔧 What it does:
 - Checks if a project with the given name exists
 - If not, creates a new project with a random suffix (e.g., `project_name_lowercase-ab12cd`)
@@ -184,6 +190,10 @@ region           = "<region>"
 - Initializes and applies Terraform configuration to provision infrastructure
 
 ✅ This script fully automates environment bootstrapping and resource provisioning.
+
+🧠 _PowerShell execution policy allows script execution (Set-ExecutionPolicy RemoteSigned -Scope Process)_
+
+ℹ️ **Expect that VPC Connector will take time to create**
 
 ---
 
@@ -210,6 +220,10 @@ Hello World
  
  🔑 For private setups, use a signed identity token with `curl`
 
+ ℹ️ If any error are found like page not found, please wait for 5 mins and try again.
+
+ ℹ️ I observerd delay in  showing _`Hello, World!`_. This might be due to  delayed propagation or Cloud Function cold start latency.
+
 ---
 
 ## 🧨 Destroy and 🧹 Clean Up
@@ -222,6 +236,7 @@ Hello World
 - Destroys Terraform-managed resources
 - Optionally deletes the GCP project itself
 - Prompts whether to delete the GCP project itself (default: **No**)
+- Type in **y** when promted to delete project as well.
 
 ---
 
@@ -308,3 +323,5 @@ This keeps the endpoint private and auditable.
 Feel free to open an issue or reach out if you'd like help with customizing modules or automating even further.
 
 ---
+
+ ℹ️ **scripts are run and tested on Windows gitbash**

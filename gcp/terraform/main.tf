@@ -1,12 +1,16 @@
 module "vpc" {
-  source          = "../modules/vpc"
-  vpc_name        = "${var.env}-${var.project_name}-vpc"
-  subnet_name     = "${var.env}-${var.project_name}-subnet"
-  subnet_cidr     = "10.10.0.0/24"
-  connector_name = "${var.env}-${substr(var.project_name, 0, 10)}-conn"
-  connector_cidr  = "10.10.1.0/28"
-  region          = var.region
+  source           = "../modules/vpc"
+  vpc_name         = "${var.env}-${var.project_name}-vpc"
+  subnet_name      = "${var.env}-${var.project_name}-subnet"
+  subnet_cidr      = "10.10.0.0/24"
+  connector_name   = "${var.env}-${substr(var.project_name, 0, 10)}-conn"
+  connector_cidr   = "10.10.1.0/28"
+  region           = var.region
+  project_id       = var.project_id
+  env              = var.env
+  project_name     = var.project_name
 }
+
 
 module "cloud_function" {
   source         = "../modules/cloud_function"
@@ -23,9 +27,14 @@ module "cloud_function" {
 
 module "load_balancer" {
   source        = "../modules/load_balancer"
+  project_id    = var.project_id
   region        = var.region
+  env           = var.env
+  project_name  = var.project_name
   function_name = module.cloud_function.cloud_function_name
 }
+
+
 
 resource "null_resource" "zip_function" {
   provisioner "local-exec" {
@@ -51,8 +60,10 @@ resource "google_storage_bucket_object" "function_zip" {
 }
 
 module "service_account" {
-  source = "../modules/service_account"
-  name   = "${var.env}-${var.project_name}-sa"
+  source       = "../modules/service_account"
+  env          = var.env
+  project_name = var.project_name
+  project_id   = var.project_id
 }
 
 module "iam_lb_invoker" {
