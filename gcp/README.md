@@ -130,7 +130,8 @@ Use short but meaningful values for `project_name` and `env` to keep resource na
 
 ## 📥 Clone the repo
 ```
-git clone https://github.com/<username>/<reponame>.git
+git clone https://github.com/RaniMounikaKotakadi/gcp.git
+
 ```
 ---
 ## 🪄 Setup
@@ -168,11 +169,7 @@ region           = "<region>"
 
 ```bash
 ./scripts/bootstrap.sh
-```
-### or
 
-```powershell
-./scripts/bootstrap.ps1
 ```
 
 🔧 What it does:
@@ -184,8 +181,6 @@ region           = "<region>"
 - Initializes and applies Terraform configuration to provision infrastructure
 
 ✅ This script fully automates environment bootstrapping and resource provisioning.
-
-🧠 _PowerShell execution policy allows script execution (Set-ExecutionPolicy RemoteSigned -Scope Process)_
 
 ℹ️ **Expect that VPC Connector will take time to create**
 
