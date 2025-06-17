@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.3.0"
 
   backend "gcs" {
-    bucket  = "terraform-backend-bucket-example"  # Must be created manually beforehand
+    bucket  = "terraform-backend-bucket-example"  # Must be created manually beforehand, check Readme.md
     prefix  = "gcp-cloud-function/state"          # Folder path inside the bucket
   }
 
